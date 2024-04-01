@@ -10,7 +10,10 @@ private:
 public:
     Day(const std::string name):name{name}{movies={};}
 
-    void addMovie(const std::string movieName){movies.push_back(movieName);}
+    void addMovie(const std::vector<std::string> movieNames){
+        for(auto i:movieNames)
+            movies.push_back(i);
+    }
 
     const std::list <std::string> getMovies(){return movies;}
 
@@ -31,11 +34,20 @@ private:
     const std::string name;
     std::vector <std::string> hours;
     std::string description;
-    int seats=40;
+
+    int checkHour(std::string hour){
+        for(auto i:hours)
+            if(hour==i)
+                return 1;
+        return 0;
+    }
 public:
     Movie(const std::string name):name{name}{hours={};description="";}
     
-    void addHour(std::string ora){hours.push_back(ora);}
+    void addHour(std::vector<std::string> ore){
+        for(auto i:ore)
+            hours.push_back(i);
+    }
 
     void showHours(){
         std::cout<<"|";
@@ -44,25 +56,16 @@ public:
         }
     }
 
+    std::vector<std::string> getHours() const{return hours;}
+
     const std::string getName() const{return name;}
-
-    int occupySeats(int nrlocuri){
-        if(seats<nrlocuri){
-            return 0;
-        }
-        else{
-            seats-=nrlocuri;
-        }
-    }
-
-    //int getSeats() const{return seats;}
 
     void addInfo(const std::string description){this->description=description;}
 
     std::string getInfo() const{return description;}
 
     int hourAvailability(std::string oraAleasa){
-        for(int i=0;i<=sizeof(hours);i++){
+        for(int i=0;i<=hours.size();i++){
             if(oraAleasa==hours[i]){
                 return 1;
             }
@@ -70,7 +73,57 @@ public:
         return 0;
     }
 
+    friend class Cinema;
 };
+
+class Cinema{
+private:
+    const std::string name;
+    std::vector<std::string> movies;
+    std::vector<int> seats={40};
+
+public:
+    Cinema(const std::string name):name{name}{}
+
+    void addMovies(std::vector<Movie> m,std::vector<std::string> h){
+        for(int i=0;i<m.size();i++)
+            for(int j=0;j<h.size();j++)
+                if(m[i].checkHour(h[j])==1){
+                    movies.push_back(m[i].getName()+"-"+h[j]);
+                    seats.push_back(40);
+                }
+    }
+    int occupySeats(Movie movie,std::string hour,int number_of_seats){
+        int counter=-1;
+        for(int cnt=0;cnt<movies.size();cnt++){
+            if(movies[cnt]==movie.getName()+"-"+hour){
+                if(seats[cnt]>=number_of_seats){
+                    seats[cnt]-=number_of_seats;
+                    counter=cnt;
+                    break;
+                    }
+            }
+        }
+        if(counter<0){
+            return 0;
+        }
+        else return 1;
+    }
+    std::string getName() const{return name;}
+
+    std::vector<std::string> getMovies() const{return movies;}
+
+    friend std::ostream& operator<<(std::ostream& os,const Cinema& salacinema);
+};
+
+std::ostream& operator<<(std::ostream& os,const Cinema& salacinema){
+    int cnt=0;
+    os<<salacinema.getName()<<":"<<std::endl;
+    for(auto i:salacinema.getMovies()){
+        os<<i<<"||";
+    }
+    return os;
+}
 
 class Profile{
 private:
@@ -99,6 +152,7 @@ std::ostream& operator<<(std::ostream& os,const Profile& profile){
     return os;
 }
 
+
 void setDays(std::vector<Day>& zile){
 
     Day Luni("luni");
@@ -109,78 +163,13 @@ void setDays(std::vector<Day>& zile){
     Day Sambata("sambata");
     Day Duminica("duminica");
 
-    Luni.addMovie("2020");
-    Luni.addMovie("Baghead:Mesagerul Mortii");
-    Luni.addMovie("Baietii buni ajung in rai");
-    Luni.addMovie("Kung Fu Panda 4");
-    Luni.addMovie("Camera Rosie");
-    Luni.addMovie("Casatoriti din greseala");
-    Luni.addMovie("Dune:Partea II");
-    Luni.addMovie("Eu capitan");
-
-    Marti.addMovie("2020");
-    Marti.addMovie("Baghead:Mesagerul Mortii");
-    Marti.addMovie("Baietii buni ajung in rai");
-    Marti.addMovie("Kung Fu Panda 4");
-    Marti.addMovie("Camera Rosie");
-    Marti.addMovie("Casatoriti din greseala");
-    Marti.addMovie("Dune:Partea II");
-    Marti.addMovie("Eu capitan");
-    Marti.addMovie("Madame Web");
-    Marti.addMovie("Demonul copilariei");
-
-    Miercuri.addMovie("Baghead:Mesagerul Mortii");
-    Miercuri.addMovie("Baietii buni ajung in rai");
-    Miercuri.addMovie("Kung Fu Panda 4");
-    Miercuri.addMovie("Camera Rosie");
-    Miercuri.addMovie("Casatoriti din greseala");
-    Miercuri.addMovie("Dune:Partea II");
-    Miercuri.addMovie("Eu capitan");
-    Miercuri.addMovie("Madame Web");
-    Miercuri.addMovie("Demonul copilariei");
-
-    Joi.addMovie("Baghead:Mesagerul Mortii");
-    Joi.addMovie("Baietii buni ajung in rai");
-    Joi.addMovie("Kung Fu Panda 4");
-    Joi.addMovie("Camera Rosie");
-    Joi.addMovie("Casatoriti din greseala");
-    Joi.addMovie("Dune:Partea II");
-    Joi.addMovie("Eu capitan");
-    Joi.addMovie("Madame Web");
-    Joi.addMovie("Demonul copilariei");
-
-    Vineri.addMovie("Kung Fu Panda 4");
-    Vineri.addMovie("Camera Rosie");
-    Vineri.addMovie("Casatoriti din greseala");
-    Vineri.addMovie("Dune:Partea II");
-    Vineri.addMovie("Eu capitan");
-    Vineri.addMovie("Madame Web");
-    Vineri.addMovie("Demonul copilariei");
-    Vineri.addMovie("Fantomele trecutului");
-    Vineri.addMovie("Gheara de fier");
-    Vineri.addMovie("Imaculata");
-
-    Sambata.addMovie("Kung Fu Panda 4");
-    Sambata.addMovie("Camera Rosie");
-    Sambata.addMovie("Casatoriti din greseala");
-    Sambata.addMovie("Dune:Partea II");
-    Sambata.addMovie("Eu capitan");
-    Sambata.addMovie("Madame Web");
-    Sambata.addMovie("Demonul copilariei");
-    Sambata.addMovie("Fantomele trecutului");
-    Sambata.addMovie("Gheara de fier");
-    Sambata.addMovie("Imaculata");
-
-    Duminica.addMovie("Kung Fu Panda 4");
-    Duminica.addMovie("Camera Rosie");
-    Duminica.addMovie("Casatoriti din greseala");
-    Duminica.addMovie("Dune:Partea II");
-    Duminica.addMovie("Eu capitan");
-    Duminica.addMovie("Madame Web");
-    Duminica.addMovie("Demonul copilariei");
-    Duminica.addMovie("Fantomele trecutului");
-    Duminica.addMovie("Gheara de fier");
-    Duminica.addMovie("Imaculata");
+    Luni.addMovie({ "2020", "Baghead:Mesagerul Mortii", "Baietii buni ajung in rai", "Kung Fu Panda 4", "Camera Rosie", "Casatoriti din greseala", "Dune:Partea II", "Eu capitan" });
+    Marti.addMovie({ "2020", "Baghead:Mesagerul Mortii", "Baietii buni ajung in rai", "Kung Fu Panda 4", "Camera Rosie", "Casatoriti din greseala", "Dune:Partea II", "Eu capitan", "Madame Web", "Demonul copilariei" });
+    Miercuri.addMovie({ "Baghead:Mesagerul Mortii", "Baietii buni ajung in rai", "Kung Fu Panda 4", "Camera Rosie", "Casatoriti din greseala", "Dune:Partea II", "Eu capitan", "Madame Web", "Demonul copilariei" });
+    Joi.addMovie({ "Baghead:Mesagerul Mortii", "Baietii buni ajung in rai", "Kung Fu Panda 4", "Camera Rosie", "Casatoriti din greseala", "Dune:Partea II", "Eu capitan", "Madame Web", "Demonul copilariei" });
+    Vineri.addMovie({ "Kung Fu Panda 4", "Camera Rosie", "Casatoriti din greseala", "Dune:Partea II", "Eu capitan", "Madame Web", "Demonul copilariei", "Fantomele trecutului", "Gheara de fier", "Imaculata" });
+    Sambata.addMovie({ "Kung Fu Panda 4", "Camera Rosie", "Casatoriti din greseala", "Dune:Partea II", "Eu capitan", "Madame Web", "Demonul copilariei", "Fantomele trecutului", "Gheara de fier", "Imaculata" });
+    Duminica.addMovie({ "Kung Fu Panda 4", "Camera Rosie", "Casatoriti din greseala", "Dune:Partea II", "Eu capitan", "Madame Web", "Demonul copilariei", "Fantomele trecutului", "Gheara de fier", "Imaculata" });
 
     zile.push_back(Luni);
     zile.push_back(Marti);
@@ -192,7 +181,7 @@ void setDays(std::vector<Day>& zile){
   
 }
 
-void setMovies(std::vector<Movie>& filme){
+void setMovies(std::vector<Movie>& filme,std::vector<Cinema>& sali){
 
     Movie m1("2020");
     Movie m2("Baghead:Mesagerul Mortii");
@@ -222,43 +211,19 @@ void setMovies(std::vector<Movie>& filme){
     m12.addInfo("TITLU ORIGINAL: The iron claw 2D\nGENUL FILMULUI: Biografic, Drama, Sport\nDISTRIBUTIE: Zac Efron, Jeremy Allen White, Harris Dickinson, Maura Tierney, Holt McCallany\nREGIZOR: Sean Durkin\nPRODUCTIE: 2023\n\n");
     m13.addInfo("TITLU ORIGINAL: Immaculate 2D\nGENUL FILMULUI: Horror\nDISTRIBUTIE: Sydney Sweeney\nREGIZOR: Michael Mohan\nPRODUCTIE: 2024\n\n");
 
-
-    m1.addHour("12:10");
-    m1.addHour("14:20");
-    m1.addHour("16:40");
-    m1.addHour("18:50");
-    m2.addHour("22:10");
-    m2.addHour("22:40");
-    m3.addHour("19:30");
-    m3.addHour("20:30");
-    m12.addHour("18:00");
-    m12.addHour("22:20");
-    m5.addHour("14:30");
-    m5.addHour("17:10");
-    m5.addHour("19:50");
-    m6.addHour("12:00");
-    m6.addHour("15:00");
-    m6.addHour("17:00");
-    m6.addHour("22:30");
-    m7.addHour("17:00");
-    m7.addHour("19:40");
-    m8.addHour("15:20");
-    m8.addHour("17:50");
-    m8.addHour("20:20");
-    m8.addHour("22:40");
-    m9.addHour("18:50");
-    m9.addHour("19:50");
-    m10.addHour("11:10");
-    m10.addHour("13:45");
-    m10.addHour("16:30");
-    m11.addHour("17:40");
-    m11.addHour("19:30");
-    m11.addHour("22:20");
-    m13.addHour("19:45");
-    m13.addHour("21:50");
-    m4.addHour("14:50");
-    m4.addHour("17:30");
-    m4.addHour("20:00");
+    m1.addHour({ "12:10", "14:20", "16:40", "18:50" });
+    m2.addHour({ "22:10", "22:40" });
+    m3.addHour({ "19:30", "20:30" });
+    m12.addHour({ "18:00", "22:20" });
+    m5.addHour({ "14:30", "17:10", "19:50" });
+    m6.addHour({ "12:00", "15:00", "17:00", "22:30" });
+    m7.addHour({ "17:00", "19:40" });
+    m8.addHour({ "15:20", "17:50", "20:20", "22:40" });
+    m9.addHour({ "18:50", "19:50" });
+    m10.addHour({ "11:10", "13:45", "16:30" });
+    m11.addHour({ "17:40", "19:30", "22:20" });
+    m13.addHour({ "19:45", "21:50" });
+    m4.addHour({ "14:50", "17:30", "20:00" });
 
     filme.push_back(m1);
     filme.push_back(m2);
@@ -274,12 +239,43 @@ void setMovies(std::vector<Movie>& filme){
     filme.push_back(m12);
     filme.push_back(m13);
 
+    Cinema s1("sala1");
+    s1.addMovies({m10, m11}, {"11:10", "13:45", "16:30", "17:40", "19:30", "22:20"});
+   
+    Cinema s2("sala2");
+    s2.addMovies({m1, m3, m9}, {"12:10", "14:20", "16:40", "18:50", "19:30", "20:30", "18:50", "19:50"});
+
+    Cinema s3("sala3");
+    s3.addMovies({m4, m5}, {"14:50", "17:30", "20:00", "14:30", "17:10", "19:50"});
+
+    Cinema s4("sala4");
+    s4.addMovies({m6}, {"12:00", "15:00", "17:00", "22:30"});
+
+    Cinema s5("sala5");
+    s5.addMovies({m7, m8}, {"17:00", "19:40", "15:20", "17:50", "20:20", "22:40"});
+
+    Cinema s6("sala6");
+    s6.addMovies({m2, m12}, {"22:10", "22:40", "18:00", "22:20"});
+
+    Cinema s7("sala7");
+    s7.addMovies({m13}, {"19:45", "21:50"});
+
+    sali.push_back(s1);
+    sali.push_back(s2);
+    sali.push_back(s3);
+    sali.push_back(s4);
+    sali.push_back(s5);
+    sali.push_back(s6);
+    sali.push_back(s7);
 }
 
 void makeReservation(Profile profil){
 std::cout<<"Filmele difuzate in aceasta saptamana sunt:\n";
     std::vector<Movie> filmeDisponibile;
-    setMovies(filmeDisponibile);
+    std::vector<Cinema> salidecinema;
+    setMovies(filmeDisponibile,salidecinema);
+    for(auto i:salidecinema)
+        std::cout<<i<<std::endl;
     for(const auto film:filmeDisponibile){
         std::cout<<"-"<<film.getName()<<std::endl;
     }
@@ -291,7 +287,7 @@ std::cout<<"Filmele difuzate in aceasta saptamana sunt:\n";
 
 while(optIndex==2){
     int cnt;
-    for(cnt=0;cnt<=sizeof(filmeDisponibile);cnt++){
+    for(cnt=0;cnt<=filmeDisponibile.size();cnt++){
         std::cout<<cnt+1<<"."<<filmeDisponibile[cnt].getName()<<std::endl;
     }
     std::cout<<std::endl<<"Alegeti filmul:";
@@ -346,11 +342,11 @@ if(optIndex==1){
     std::cout<<std::endl;
     //filme[filmIndex-1] filmul ales in string
     int k;int ind;
-        for(int i=0;i<=sizeof(filmeDisponibile);i++){
+        for(int i=0;i<=filmeDisponibile.size();i++){
         if(filmeDisponibile[i].getName()==filme[filmIndex-1]){
             ind=i;
             break;
-        }
+            }
         }
     if(aux==2){   
         std::cout<<filmeDisponibile[ind].getInfo();
@@ -371,7 +367,21 @@ if(optIndex==1){
         std::cout<<"\nAlegeti numarul de locuri:";
         int nrLocuri;
         std::cin>>nrLocuri;
-        while(filmeDisponibile[ind].occupySeats(nrLocuri)==0){
+        //filmeDisponibile[ind] filmul ales in Movie
+        int indsala;    //indexul salii in care se rezerva filmul
+        int indfilm_ora;
+        for(int i=0;i<salidecinema.size();i++){
+            for(int j=0;j<salidecinema[i].getMovies().size();j++){
+                if(filmeDisponibile[ind].getName()+"-"+ora==salidecinema[i].getMovies()[j]){
+                    indsala=i;
+                    indfilm_ora=j;
+                    break; 
+                } 
+            }
+                            
+        }
+        //std::cout<<indsala<<std::endl<<indfilm_ora;
+        while(salidecinema[indsala].occupySeats(filmeDisponibile[ind],ora,nrLocuri)==0){
             std::cout<<"Numar indisponibil de locuri pentru rezervare.\n"<<"1.Modificati numarul de locuri\n"<<"2.Alegeti un alt film\n";
             std::cout<<"Alegeti optiunea:";
             int altindex;
@@ -386,9 +396,20 @@ if(optIndex==1){
         }
         profil.newReservation(filmeDisponibile[ind],ora);
 
-        std::cout<<"Rezervare finalizata!";
-        
+        std::cout<<"Rezervare finalizata!\n1.Afisati rezervarea\n2.Faceti o noua rezervare\n3.Schimbati profilul\n";
+        int al10leaindex;
+        std::cout<<"Alegeti optiunea:";
+        std::cin>>al10leaindex;
+        std::cout<<std::endl;
+        if(al10leaindex==1){
+            std::cout<<"Ziua: "<<zile[ziuaIndex-1].getName()<<std::endl;
+            std::cout<<"Filmul: "<<filmeDisponibile[ind].getName()<<std::endl;
+            std::cout<<"Ora: "<<ora<<std::endl;
+            std::cout<<"Sala: "<<salidecinema[indsala].getName()<<std::endl;
+            std::cout<<"Numar de locuri: "<<nrLocuri<<std::endl;
+        }
     }
+    
 }
 }
 
