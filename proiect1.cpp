@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <list>
+//#include <fstream>
+//std::ifstream in("in.txt");
 
 class Day {
 private:
@@ -123,18 +125,7 @@ public:
 
     std::vector<std::string> getMovies() const { return movies; }
 
-    //friend std::ostream& operator<<(std::ostream& os,const Cinema& salacinema);
 };
-
-/*std::ostream& operator<<(std::ostream& os,const Cinema& salacinema){
-    int cnt=0;
-    os<<salacinema.getName()<<":"<<std::endl;
-    for(auto i:salacinema.getMovies()){
-        os<<i<<"||";
-    }
-    os<<std::endl;
-    return os;
-}*/
 
 class Profile {
 private:
@@ -316,12 +307,11 @@ void setMovies(std::vector<Movie> &filme, std::vector<Cinema> &sali) {
     sali.push_back(s7);
 }
 
-int makeReservation(Profile profil, std::vector<Movie>& filmeDisponibile, std::vector<Cinema> &salidecinema,
-                    std::vector<Day> zile, std::vector<Profile> &profile) {
-
-    int optIndex;
+int viewInfoMovies(Profile &profil, std::vector<Movie>& filmeDisponibile, std::vector<Cinema> &saliDeCinema,
+                    std::vector<Day> &zile){
+int optIndex;
     std::cout << "1.Faceti rezervare\n" << "2.Vizualizare filme\n" << std::endl << "Alegeti optiunea:";
-    std::cin >> optIndex;
+    std::cin>> optIndex;
 
     if (optIndex == 2) {
         for (int cnt = 0; cnt < filmeDisponibile.size(); cnt++) {
@@ -329,17 +319,17 @@ int makeReservation(Profile profil, std::vector<Movie>& filmeDisponibile, std::v
         }
         std::cout << "\nDoriti sa aflati informatii despre un anumit film?  <<DA>>  <<NU>> :";
         std::string dasaunu;
-        std::cin >> dasaunu;
+        std::cin>> dasaunu;
         std::cout << std::endl;
         if (dasaunu == "DA")
             optIndex = 3;
-        else {
+        else if(dasaunu=="NU"){
             std::cout << "Doriti sa faceti o rezervare?  <<DA>>  <<NU>> :";
-            std::cin >> dasaunu;
+            std::cin>> dasaunu;
             std::cout << std::endl;
             if (dasaunu == "DA")
                 optIndex = 1;
-            else {
+            else if(dasaunu=="NU") {
                 std::cout << "O zi buna!";
                 optIndex = -1;
                 return 0;
@@ -351,11 +341,56 @@ int makeReservation(Profile profil, std::vector<Movie>& filmeDisponibile, std::v
         while (optIndex == 2) {
             int cnt;
             std::cout << std::endl << "Alegeti filmul:";
-            std::cin >> cnt;
+            std::cin>> cnt;
             std::cout << std::endl;
             std::cout << filmeDisponibile[cnt - 1].getInfo();
             std::cout << "\n1.Faceti rezervare\n" << "2.Informatii despre alte filme\n\n" << "Alegeti optiunea:";
-            std::cin >> optIndex;
+            std::cin>> optIndex;
+        }
+
+    }
+
+}
+
+int makeReservation(Profile &profil, std::vector<Movie>& filmeDisponibile, std::vector<Cinema> &saliDeCinema,
+                    std::vector<Day> &zile, std::vector<Profile> &toateProfilele) {
+
+    int optIndex;
+    std::cout << "1.Faceti rezervare\n" << "2.Vizualizare filme\n" << std::endl << "Alegeti optiunea:";
+    std::cin>> optIndex;
+
+    if (optIndex == 2) {
+        for (int cnt = 0; cnt < filmeDisponibile.size(); cnt++) {
+            std::cout << cnt + 1 << "." << filmeDisponibile[cnt].getName() << std::endl;
+        }
+        std::cout << "\nDoriti sa aflati informatii despre un anumit film?  <<DA>>  <<NU>> :";
+        std::string daSauNuFilme;
+        std::cin>> daSauNuFilme;
+        std::cout << std::endl;
+        if (daSauNuFilme == "DA")
+            optIndex = 3;
+        else if(daSauNuFilme=="NU"){
+            std::string daSauNuRezervare;
+            std::cout << "Doriti sa faceti o rezervare?  <<DA>>  <<NU>> :";
+            std::cin>> daSauNuRezervare;
+            std::cout << std::endl;
+            if (daSauNuRezervare == "DA")
+                optIndex = 1;
+            else if(daSauNuRezervare=="NU") {
+                return 1;
+            }
+        }
+    }
+    if (optIndex == 3) {
+        optIndex = 2;
+        while (optIndex == 2) {
+            int cnt;
+            std::cout << std::endl << "Alegeti filmul:";
+            std::cin>> cnt;
+            std::cout << std::endl;
+            std::cout << filmeDisponibile[cnt - 1].getInfo();
+            std::cout << "\n1.Faceti rezervare\n" << "2.Informatii despre alte filme\n\n" << "Alegeti optiunea:";
+            std::cin>> optIndex;
         }
 
     }
@@ -372,159 +407,150 @@ int makeReservation(Profile profil, std::vector<Movie>& filmeDisponibile, std::v
         std::cout << "7.Duminica\n";
 
         std::cout << "\nAlegeti ziua:";
-        std::cin >> ziuaIndex;
+        std::cin>> ziuaIndex;
         std::cout << std::endl;
 
         std::vector<std::string> filme;
-        for (const auto &film: zile[ziuaIndex - 1].getMovies()) {
+        for (const auto &film: zile[ziuaIndex - 1].getMovies()) 
             filme.push_back(film);
-        }
-        for (int i = 0; i < filme.size(); i++) {
+        
+        for (int i = 0; i < filme.size(); i++) 
             std::cout << i + 1 << "." << filme[i] << std::endl;
-        }
+        
         int filmIndex;
         std::cout << std::endl;
 
         std::cout << "Alegeti filmul:";
-        std::cin >> filmIndex;
+        std::cin>> filmIndex;
         std::cout << std::endl;
-        int ok = zile[ziuaIndex - 1].movieAvailability(filmIndex);
-        while (ok == 0) {
+        int auxMovieAvail = zile[ziuaIndex - 1].movieAvailability(filmIndex);
+        while (auxMovieAvail == 0) {
             std::cout << "Filmul selectat nu se difuzeaza " << zile[ziuaIndex - 1].getName()
                       << ". Alegeti un alt film:";
-            std::cin >> filmIndex;
-            ok = zile[ziuaIndex - 1].movieAvailability(filmIndex);
+            std::cin>> filmIndex;
+            auxMovieAvail = zile[ziuaIndex - 1].movieAvailability(filmIndex);
         }
 
         std::cout << std::endl << "1.Orele valabile" << std::endl << "2.Informatii despre film" << std::endl
                   << "Alegeti optiunea:";
-        int aux;
-        std::cin >> aux;
+        int optiuneFilm;
+        std::cin>> optiuneFilm;
         std::cout << std::endl;
+        int ok3;
         //filme[filmIndex-1] filmul ales in string
-        int k;
+        int optiuneOreValabile;
         int ind;
-        for (int i = 0; i <= filmeDisponibile.size(); i++) {
+        for (int i = 0; i <= filmeDisponibile.size(); i++) 
             if (filmeDisponibile[i].getName() == filme[filmIndex - 1]) {
                 ind = i;
                 break;
             }
-        }
-        if (aux == 2) {
+        
+        if (optiuneFilm == 2) {
             std::cout << filmeDisponibile[ind].getInfo();
             std::cout << "1.Orele valabile:";
-            std::cin >> k;
+            std::cin>> optiuneOreValabile;
         }
-        if (aux == 1 || k == 1) {
+        if (optiuneFilm == 1 || optiuneOreValabile == 1) {
             filmeDisponibile[ind].showHours();
             std::cout << "\n\nAlegeti ora:";
             std::string ora;
-            std::cin >> ora;
-            ok = filmeDisponibile[ind].hourAvailability(ora);
-            while (ok == 0) {
+            std::cin>> ora;
+            ok3 = filmeDisponibile[ind].hourAvailability(ora);
+            while (ok3 == 0) {
                 std::cout << "\nOra indisponibila. Alegeti o alta ora:";
-                std::cin >> ora;
-                ok = filmeDisponibile[ind].hourAvailability(ora);
+                std::cin>> ora;
+                ok3 = filmeDisponibile[ind].hourAvailability(ora);
             }
             //filmeDisponibile[ind] filmul ales in Movie
-            int indsala;    //indexul salii in care se rezerva filmul
-            int indfilm_ora;
-            for (int i = 0; i < salidecinema.size(); i++) {
-                for (int j = 0; j < salidecinema[i].getMovies().size(); j++) {
-                    if (filmeDisponibile[ind].getName() + "-" + ora == salidecinema[i].getMovies()[j]) {
-                        indsala = i;
-                        indfilm_ora = j;
+            int indSala;    //indexul salii in care se rezerva filmul
+            int indFilmOra;
+            for (int i = 0; i < saliDeCinema.size(); i++)
+                for (int j = 0; j < saliDeCinema[i].getMovies().size(); j++)
+                    if (filmeDisponibile[ind].getName() + "-" + ora == saliDeCinema[i].getMovies()[j]) {
+                        indSala = i;
+                        indFilmOra = j;
                         break;
                     }
-                }
-
-            }
+                
             std::cout << "Locuri disponibile:"
-                      << salidecinema[indsala].getAvailableSeats(filmeDisponibile[ind].getName() + "-" + ora)
+                      << saliDeCinema[indSala].getAvailableSeats(filmeDisponibile[ind].getName() + "-" + ora)
                       << ". Alegeti numarul de locuri:";
             int nrLocuri;
-            std::cin >> nrLocuri;
-            //std::cout<<indsala<<std::endl<<indfilm_ora;
-            while (salidecinema[indsala].getAvailableSeats(filmeDisponibile[ind].getName() + "-" + ora) < nrLocuri) {
-                std::cout << "Numar indisponibil de locuri pentru rezervare.\n" << "1.Modificati numarul de locuri\n"
-                          << "2.Alegeti un alt film\n";
-                std::cout << "Alegeti optiunea:";
-                int altindex;
-                std::cin >> altindex;
-                if (altindex == 1) {
-                    std::cout << "\nAlegeti numarul de locuri:";
-                    std::cin >> nrLocuri;
-                } else if (altindex == 2) {
-                    makeReservation(profil, filmeDisponibile, salidecinema, zile, profile);
-                }
+            std::cin>> nrLocuri;
+            //std::cout<<indSala<<std::endl<<indFilmOra;
+            while (saliDeCinema[indSala].getAvailableSeats(filmeDisponibile[ind].getName() + "-" + ora) < nrLocuri) {
+                std::cout << "Numar indisponibil de locuri pentru rezervare.\n" << "Modificati numarul de locuri:\n";
+                std::cin>> nrLocuri;      
             }
 
-            if (salidecinema[indsala].getAvailableSeats(filmeDisponibile[ind].getName() + "-" + ora) >= nrLocuri) {
-                salidecinema[indsala].occupySeats(filmeDisponibile[ind], ora, nrLocuri);
+            if (saliDeCinema[indSala].getAvailableSeats(filmeDisponibile[ind].getName() + "-" + ora) >= nrLocuri) {
+                saliDeCinema[indSala].occupySeats(filmeDisponibile[ind], ora, nrLocuri);
                 std::cout << "Locuri disponibile:"
-                          << salidecinema[indsala].getAvailableSeats(filmeDisponibile[ind].getName() + "-" + ora);
+                          << saliDeCinema[indSala].getAvailableSeats(filmeDisponibile[ind].getName() + "-" + ora);
             }
             profil.newReservation(zile[ziuaIndex - 1].getName(), filmeDisponibile[ind].getName(), ora,
-                                  salidecinema[indsala].getName(), std::to_string(nrLocuri));
+                                  saliDeCinema[indSala].getName(), std::to_string(nrLocuri));
 
 
-            std::cout << "Rezervare finalizata!\n1.Afisati rezervarea\n2.Faceti o noua rezervare\n";
-            int al10leaindex;
-            std::cout << "Alegeti optiunea:";
-            std::cin >> al10leaindex;
-            if (al10leaindex == 1) {
+            std::cout << ". Rezervare finalizata!\nDoriti sa vedeti rezervarea? <<DA>>  <<NU>> :";
+            std::string dasaunuRezervare;
+            std::cin>>dasaunuRezervare;
+            if (dasaunuRezervare == "DA") {
                 std::cout << std::endl;
                 std::cout << profil;
                 std::cout << "\n1.Faceti o noua rezervare\n2.Inapoi la inceput\nAlegeti optiunea:";
-                std::cin >> al10leaindex;
+                int al10leaindex;
+                std::cin>> al10leaindex;
                 if (al10leaindex == 1)
-                    makeReservation(profil, filmeDisponibile, salidecinema, zile, profile);
-                else if (al10leaindex == 2)
-                    return 1;
-
-            } else {
-                makeReservation(profil, filmeDisponibile, salidecinema, zile, profile);
+                    makeReservation(profil, filmeDisponibile, saliDeCinema, zile, toateProfilele);
+                return 1;   
             }
+            else{
+                int al10leaindex=1;
+                if (al10leaindex == 1)
+                    makeReservation(profil, filmeDisponibile, saliDeCinema, zile, toateProfilele);
+                return 1; 
+            }     
         }
     }
 }
 
-void start(std::vector<Movie> filmeDisponibile, std::vector<Cinema> salidecinema, std::vector<Day> zile,
-           std::vector<Profile> &profile) {
+void start(std::vector<Movie> &filmeDisponibile, std::vector<Cinema> &saliDeCinema, std::vector<Day> &zile,
+           std::vector<Profile> &toateProfilele) {
 
-    std::cout << "1.Creati un profil\n2.Conectati-va la un profil deja existent\nAlegeti optiunea:";
+    std::cout << "1.Creati un profil\n2.Conectati-va la un profil deja existent\n3.Sfarsitul rezervarii\nAlegeti optiunea:";
     int index;
-    std::cin >> index;
+    std::cin>> index;
     std::string nume;
     std::string parola;
 
     if (index == 2) {
-        std::cout<<"\n-----------NR DE PROFILE-> "<<profile.size()<<std::endl<<std::endl;
-        if (profile.size() == 0) {
+        if (toateProfilele.size() == 0) {
             std::cout << "Profil inexistent.\n";
             index = 1;
-        } else {
+        }
+        else {
             std::cout << "Nume:";
-            std::cin >> nume;
+            std::cin>> nume;
             std::cout << "Parola:";
-            std::cin >> parola;
-            for (auto i: profile) {
+            std::cin>> parola;
+            for (auto i: toateProfilele) {
                 int ok = i.checkProfile(nume, parola);
                 while (ok == 0) {
                     std::cout << "Parola incorecta.\nParola:";
-                    std::cin >> parola;
+                    std::cin>> parola;
                     ok = i.checkProfile(nume, parola);
                 }
                 if (ok == 1) {
-                    int ok1 = makeReservation(i, filmeDisponibile, salidecinema, zile, profile);
+                    int ok1 = makeReservation(i, filmeDisponibile, saliDeCinema, zile, toateProfilele);
 
                     if(!ok1) return;
 
-                    if (ok1 == 1) {
-                        std::cout<<"Buna mami\n";
-                        start(filmeDisponibile, salidecinema, zile, profile);
-                    }
-                } else if (ok == -1) {
+                    if (ok1 == 1)
+                        start(filmeDisponibile, saliDeCinema, zile, toateProfilele);
+                }
+                else if (ok == -1) {
                     std::cout << "Profil inexistent.\n";
                     index = 1;
                 }
@@ -533,28 +559,28 @@ void start(std::vector<Movie> filmeDisponibile, std::vector<Cinema> salidecinema
     }
     if (index == 1) {
         std::cout << "Adaugati numele profilului:";
-        std::cin >> nume;
+        std::cin>> nume;
         std::cout << "Adaugati o parola:";
-        std::cin >> parola;
+        std::cin>> parola;
         Profile p(nume, parola);
         std::cout << "Profilul a fost creat.\n";
-        profile.push_back(p);
-        for (auto i: profile)
-            std::cout << i;
-        if (makeReservation(p, filmeDisponibile, salidecinema, zile, profile) == 1)
-            start(filmeDisponibile, salidecinema, zile, profile);
+        toateProfilele.push_back(p);
+        if (makeReservation(p, filmeDisponibile, saliDeCinema, zile, toateProfilele) == 1)
+            start(filmeDisponibile, saliDeCinema, zile, toateProfilele);
     }
+    if(index==3)
+        std::cout<<"O zi buna!";
 }
 
 int main() {
-
+    
     std::vector<Movie> filmeDisponibile;
-    std::vector<Cinema> salidecinema;
+    std::vector<Cinema> saliDeCinema;
     std::vector<Day> zile;
     std::vector<Profile> profile = {};
-    setMovies(filmeDisponibile, salidecinema);
+    setMovies(filmeDisponibile, saliDeCinema);
     setDays(zile);
-    start(filmeDisponibile, salidecinema, zile, profile);
+    start(filmeDisponibile, saliDeCinema, zile, profile);
 
     return 0;
 }
