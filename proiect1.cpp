@@ -133,7 +133,7 @@ private:
     const std::string password;
     std::vector<std::vector<std::string>> reservations;
 public:
-    Profile(const std::string name, std::string password) : name{name}, password{password} { reservations = {}; }
+    Profile(const std::string name, std::string password,std::vector<std::vector<std::string>> reservations={}) : name{name}, password{password} { reservations = {}; }
 
     void newReservation(std::string zi, std::string film, std::string ora, std::string salacinema, std::string nrloc) {
         reservations.push_back({zi, film, ora, salacinema, nrloc});
@@ -147,17 +147,17 @@ public:
         else if (nume != name)
             return -1;
     }
-
+    std::vector<std::vector<std::string>> getReservations() const { return reservations; }
     const std::string getName() const { return name; }
-
+    std::string getPassword() const{ return password;}
     friend std::ostream &operator<<(std::ostream &os, const Profile &profile);
 };
 
 std::ostream &operator<<(std::ostream &os, const Profile &profile) {
     int cnt = 0;
     os << "Afisam rezervarile profilului cu numele " << profile.getName() << ":" << std::endl;
-    for (auto it = profile.reservations.begin(); it != profile.reservations.end(); it++) {
-        std::vector<std::string> rez = *it;
+    for (auto it:profile.reservations) {
+        std::vector<std::string> rez = it;
         std::cout << "Ziua: " << rez[0] << std::endl;
         std::cout << "Filmul: " << rez[1] << std::endl;
         std::cout << "Ora: " << rez[2] << std::endl;
@@ -490,7 +490,7 @@ void start(std::vector<Movie> &filmeDisponibile, std::vector<Cinema> &saliDeCine
             std::cin>> nume;
             std::cout << "Parola:";
             std::cin>> parola;
-            for (auto i: toateProfilele) {
+            for (auto &i: toateProfilele) {
                 int ok = i.checkProfile(nume, parola);
                 while (ok == 0) {
                     std::cout << "Parola incorecta.\nParola:";
@@ -519,9 +519,9 @@ void start(std::vector<Movie> &filmeDisponibile, std::vector<Cinema> &saliDeCine
         std::cin>> parola;
         Profile p(nume, parola);
         std::cout << "Profilul a fost creat.\n";
+        makeReservation(p, filmeDisponibile, saliDeCinema, zile, toateProfilele);
         toateProfilele.push_back(p);
-        if (makeReservation(p, filmeDisponibile, saliDeCinema, zile, toateProfilele) == 1)
-            start(filmeDisponibile, saliDeCinema, zile, toateProfilele);
+        start(filmeDisponibile, saliDeCinema, zile, toateProfilele);
     }
     if(index==3)
         std::cout<<"O zi buna!";
@@ -532,10 +532,10 @@ int main() {
     std::vector<Movie> filmeDisponibile;
     std::vector<Cinema> saliDeCinema;
     std::vector<Day> zile;
-    std::vector<Profile> profile = {};
+    std::vector<Profile> toateProfilele = {};
     setMovies(filmeDisponibile, saliDeCinema);
     setDays(zile);
-    start(filmeDisponibile, saliDeCinema, zile, profile);
+    start(filmeDisponibile, saliDeCinema, zile, toateProfilele);
 
     return 0;
 }
