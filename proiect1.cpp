@@ -307,51 +307,6 @@ void setMovies(std::vector<Movie> &filme, std::vector<Cinema> &sali) {
     sali.push_back(s7);
 }
 
-int viewInfoMovies(Profile &profil, std::vector<Movie>& filmeDisponibile, std::vector<Cinema> &saliDeCinema,
-                    std::vector<Day> &zile){
-int optIndex;
-    std::cout << "1.Faceti rezervare\n" << "2.Vizualizare filme\n" << std::endl << "Alegeti optiunea:";
-    std::cin>> optIndex;
-
-    if (optIndex == 2) {
-        for (int cnt = 0; cnt < filmeDisponibile.size(); cnt++) {
-            std::cout << cnt + 1 << "." << filmeDisponibile[cnt].getName() << std::endl;
-        }
-        std::cout << "\nDoriti sa aflati informatii despre un anumit film?  <<DA>>  <<NU>> :";
-        std::string dasaunu;
-        std::cin>> dasaunu;
-        std::cout << std::endl;
-        if (dasaunu == "DA")
-            optIndex = 3;
-        else if(dasaunu=="NU"){
-            std::cout << "Doriti sa faceti o rezervare?  <<DA>>  <<NU>> :";
-            std::cin>> dasaunu;
-            std::cout << std::endl;
-            if (dasaunu == "DA")
-                optIndex = 1;
-            else if(dasaunu=="NU") {
-                std::cout << "O zi buna!";
-                optIndex = -1;
-                return 0;
-            }
-        }
-    }
-    if (optIndex == 3) {
-        optIndex = 2;
-        while (optIndex == 2) {
-            int cnt;
-            std::cout << std::endl << "Alegeti filmul:";
-            std::cin>> cnt;
-            std::cout << std::endl;
-            std::cout << filmeDisponibile[cnt - 1].getInfo();
-            std::cout << "\n1.Faceti rezervare\n" << "2.Informatii despre alte filme\n\n" << "Alegeti optiunea:";
-            std::cin>> optIndex;
-        }
-
-    }
-
-}
-
 int makeReservation(Profile &profil, std::vector<Movie>& filmeDisponibile, std::vector<Cinema> &saliDeCinema,
                     std::vector<Day> &zile, std::vector<Profile> &toateProfilele) {
 
