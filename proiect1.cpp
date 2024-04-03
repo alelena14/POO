@@ -144,12 +144,10 @@ public:
             return 1;
         else if (password != parola && name == nume)
             return 0;
-        else if (nume != name)
-            return -1;
+        return -1;
     }
     std::vector<std::vector<std::string>> getReservations() const { return reservations; }
     const std::string getName() const { return name; }
-    std::string getPassword() const{ return password;}
     friend std::ostream &operator<<(std::ostream &os, const Profile &profile);
 };
 
@@ -309,12 +307,19 @@ void setMovies(std::vector<Movie> &filme, std::vector<Cinema> &sali) {
 
 int makeReservation(Profile &profil, std::vector<Movie>& filmeDisponibile, std::vector<Cinema> &saliDeCinema,
                     std::vector<Day> &zile, std::vector<Profile> &toateProfilele) {
-
+    
+    if(profil.getReservations().size()>0){
+        std::string optInitialaRezervari;
+        std::cout<<"Doriti sa vedeti rezervarile?  <<DA>>  <<NU>> :";
+        std::cin>>optInitialaRezervari;
+        if(optInitialaRezervari=="DA")
+            std::cout<<profil;
+    }
     int optIndex;
     std::cout << "1.Faceti rezervare\n" << "2.Vizualizare filme\n" << std::endl << "Alegeti optiunea:";
     std::cin>> optIndex;
 
-    if (optIndex == 2) {
+    if(optIndex==2) {
         for (int cnt = 0; cnt < filmeDisponibile.size(); cnt++) {
             std::cout << cnt + 1 << "." << filmeDisponibile[cnt].getName() << std::endl;
         }
@@ -322,6 +327,7 @@ int makeReservation(Profile &profil, std::vector<Movie>& filmeDisponibile, std::
         std::string daSauNuFilme;
         std::cin>> daSauNuFilme;
         std::cout << std::endl;
+        
         if (daSauNuFilme == "DA")
             optIndex = 3;
         else if(daSauNuFilme=="NU"){
@@ -336,7 +342,7 @@ int makeReservation(Profile &profil, std::vector<Movie>& filmeDisponibile, std::
             }
         }
     }
-    if (optIndex == 3) {
+    if(optIndex==3) {
         optIndex = 2;
         while (optIndex == 2) {
             int cnt;
@@ -350,7 +356,7 @@ int makeReservation(Profile &profil, std::vector<Movie>& filmeDisponibile, std::
 
     }
 
-    if (optIndex == 1) {
+    if(optIndex==1) {
         int ziuaIndex;
 
         std::cout << "\n1.Luni\n";
@@ -433,7 +439,7 @@ int makeReservation(Profile &profil, std::vector<Movie>& filmeDisponibile, std::
                       << ". Alegeti numarul de locuri:";
             int nrLocuri;
             std::cin>> nrLocuri;
-            //std::cout<<indSala<<std::endl<<indFilmOra;
+            
             while (saliDeCinema[indSala].getAvailableSeats(filmeDisponibile[ind].getName() + "-" + ora) < nrLocuri) {
                 std::cout << "Numar indisponibil de locuri pentru rezervare.\n" << "Modificati numarul de locuri:\n";
                 std::cin>> nrLocuri;      
@@ -462,13 +468,16 @@ int makeReservation(Profile &profil, std::vector<Movie>& filmeDisponibile, std::
                 return 1;   
             }
             else{
-                int al10leaindex=1;
-                if (al10leaindex == 1)
+                int al10leaindex;
+                std::cout<<"1.Faceti o noua rezervare\n2.Inapoi la inceput\nAlegeti optiunea:";
+                std::cin>>al10leaindex;
+                if(al10leaindex==1)
                     makeReservation(profil, filmeDisponibile, saliDeCinema, zile, toateProfilele);
                 return 1; 
             }     
         }
     }
+    
 }
 
 void start(std::vector<Movie> &filmeDisponibile, std::vector<Cinema> &saliDeCinema, std::vector<Day> &zile,
@@ -497,18 +506,25 @@ void start(std::vector<Movie> &filmeDisponibile, std::vector<Cinema> &saliDeCine
                     std::cin>> parola;
                     ok = i.checkProfile(nume, parola);
                 }
-                if (ok == 1) {
+                switch(ok){
+                case(1): {
                     int ok1 = makeReservation(i, filmeDisponibile, saliDeCinema, zile, toateProfilele);
+                    switch(ok1){
+                    case(0): 
+                        return;
 
-                    if(!ok1) return;
-
-                    if (ok1 == 1)
+                    case(1):
                         start(filmeDisponibile, saliDeCinema, zile, toateProfilele);
+                        return;   
+                    }
+                    
                 }
-                else if (ok == -1) {
+                case(-1): {
                     std::cout << "Profil inexistent.\n";
                     index = 1;
+                }   
                 }
+                
             }
         }
     }
@@ -522,9 +538,11 @@ void start(std::vector<Movie> &filmeDisponibile, std::vector<Cinema> &saliDeCine
         makeReservation(p, filmeDisponibile, saliDeCinema, zile, toateProfilele);
         toateProfilele.push_back(p);
         start(filmeDisponibile, saliDeCinema, zile, toateProfilele);
+        return;
     }
     if(index==3)
         std::cout<<"O zi buna!";
+    return;
 }
 
 int main() {
